@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정비사업 실무 허브</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕','Malgun Gothic',sans-serif;background:#f5f5f7;color:#1a1a1a;font-size:14px}
+.header{background:#fff;border-bottom:1px solid #e5e5e5;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.header .ht{font-size:17px;font-weight:700}.header .hs{font-size:11px;color:#888;margin-top:2px}
+.set{font-size:11px;color:#1d4ed8;cursor:pointer;background:none;border:none;font-family:inherit}
+.set:hover{text-decoration:underline}
+.wrap{max-width:860px;margin:0 auto;padding:20px}
+.intro{font-size:13px;color:#555;line-height:1.7;margin-bottom:16px}
+.intro b{color:#1a1a1a}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:18px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit}
+.card:hover{border-color:#60a5fa;box-shadow:0 3px 14px rgba(0,0,0,.08);transform:translateY(-1px)}
+.card .ic{font-size:26px}
+.card .ti{font-size:15px;font-weight:700}
+.card .de{font-size:11.5px;color:#666;line-height:1.6}
+.card .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:2px;width:fit-content}
+.b-start{background:#dcfce7;color:#166534}.b-tool{background:#dbeafe;color:#1e40af}.b-calc{background:#fef3c7;color:#92400e}.b-repo{background:#f3f4f6;color:#374151}
+.card .go{font-size:12px;color:#aaa;margin-top:auto;align-self:flex-end}
+.sec{font-size:11px;font-weight:700;color:#888;letter-spacing:.05em;text-transform:uppercase;margin:0 0 10px}
+.panel{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:16px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:9px 10px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}
+th{background:#fafafa;color:#666;font-weight:600;font-size:11px;white-space:nowrap}
+td b{color:#1a1a1a}
+.flow{display:flex;flex-direction:column;gap:10px}
+.fitem{display:flex;gap:11px;align-items:flex-start;font-size:12.5px;line-height:1.6}
+.fnum{flex:none;width:22px;height:22px;border-radius:50%;background:#1a1a1a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.fitem .arr{color:#60a5fa;font-weight:700}
+.disc{font-size:10.5px;color:#9a9a9a;line-height:1.7;margin-top:8px}
+.tip{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 13px;font-size:11.5px;color:#1d4ed8;line-height:1.7;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="ht">🏗 정비사업 실무 허브</div>
+    <div class="hs">받은 양식 파악 · 도구 실행 · 자료 저장 — 한 곳에서 시작</div>
+  </div>
+  <button class="set" onclick="setProj()">⚙ 프로젝트 링크 설정</button>
+</div>
+
+<div class="wrap">
+
+  <div class="intro">
+    조합에서 <b>양식·서류를 받으면</b> 먼저 <b>① 양식 파악·질문</b>으로 들어가 사진/파일을 올리고 물어보세요.
+    필요한 <b>도구(동의서·분담금)</b>는 ②③에서, <b>자료 보관</b>은 ④에서 합니다.
+  </div>
+
+  <div class="grid">
+    <a class="card" id="card-proj" href="#" onclick="goProj(event)">
+      <div class="ic">📂</div>
+      <div class="ti">양식 파악·질문</div>
+      <div class="de">받은 서류를 올리면 현재 단계를 진단하고, 필요한 안내문·대응을 알려줍니다. (claude.ai 정비사업 프로젝트)</div>
+      <span class="badge b-start">여기서 시작</span>
+      <div class="go">열기 →</div>
+    </a>
+
+    <a class="card" href="동의서_징구_시스템.html">
+      <div class="ic">📝</div>
+      <div class="ti">동의서 징구 시스템</div>
+      <div class="de">전자동의서·위임장, 서면 인쇄, 스캔 자동입력(OCR), 도정법 제35조 동의율 자동판정.</div>
+      <span class="badge b-tool">실행 도구</span>
+      <div class="go">열기 →</div>
+    </a>
+
+    <a class="card" id="card-calc" href="#" onclick="goProj(event,'분담금 계산해줘')">
+      <div class="ic">🧮</div>
+      <div class="ti">분담금 계산</div>
+      <div class="de">비례율·권리가액·분담금 정확 계산(도정법 제74조). 프로젝트에서 "분담금 계산"이라고 입력하세요.</div>
+      <span class="badge b-calc">계산 스킬</span>
+      <div class="go">열기 →</div>
+    </a>
+
+    <a class="card" href="https://github.com/jjukjukoo79-ops/Reconstruction-automation" target="_blank" rel="noopener">
+      <div class="ic">📁</div>
+      <div class="ti">자료 저장소</div>
+      <div class="de">모든 도구·지침·백업이 보관된 GitHub 저장소. 최신 파일 내려받기·이력 확인.</div>
+      <span class="badge b-repo">GitHub</span>
+      <div class="go">열기 →</div>
+    </a>
+  </div>
+
+  <div class="tip" id="projTip"></div>
+
+  <div class="sec">어디서 무엇을 하나</div>
+  <div class="panel">
+    <table>
+      <tr><th>이런 일은</th><th>여기서</th></tr>
+      <tr><td><b>"이게 무슨 단계지? 어떻게 대응?"</b><br>받은 양식·서류 파악, 안내문 초안</td><td>📂 <b>양식 파악·질문</b> (프로젝트)<br><span style="color:#888">PC·휴대폰 어디서든</span></td></tr>
+      <tr><td><b>동의서/위임장 받고 집계</b><br>전자서명·스캔입력·동의율</td><td>📝 <b>동의서 징구 시스템</b></td></tr>
+      <tr><td><b>분담금·비례율 정확 계산</b></td><td>🧮 <b>프로젝트에서 "분담금 계산"</b></td></tr>
+      <tr><td><b>도구 새로 만들기·고치기, 저장</b></td><td>🛠 <b>Claude Code</b>(PC 작업실) → 📁 저장소</td></tr>
+    </table>
+    <div class="disc">※ 이 허브는 <b>바로가기 모음</b>입니다. 질문은 허브가 아니라 📂 프로젝트(또는 Claude)에서 받습니다.</div>
+  </div>
+
+  <div class="sec">실전 흐름 예시</div>
+  <div class="panel flow">
+    <div class="fitem"><div class="fnum">1</div><div><b>조합에서 감정평가 통보서를 받음</b> <span class="arr">→</span> 📂 양식 파악·질문에 사진 업로드 <span class="arr">→</span> "현재 4단계(관리처분). 분양신청·분담금 안내가 핵심" 진단</div></div>
+    <div class="fitem"><div class="fnum">2</div><div><b>분담금이 궁금</b> <span class="arr">→</span> 같은 프로젝트에서 "분담금 계산" <span class="arr">→</span> 수치 입력 <span class="arr">→</span> 비례율·분담금 표 즉시 산출</div></div>
+    <div class="fitem"><div class="fnum">3</div><div><b>조합원 동의서를 모아야 함</b> <span class="arr">→</span> 📝 동의서 징구 시스템 <span class="arr">→</span> 전자/서면/스캔으로 등록 <span class="arr">→</span> 동의율 자동판정</div></div>
+    <div class="fitem"><div class="fnum">4</div><div><b>도구를 바꾸고 싶음</b> <span class="arr">→</span> 🛠 Claude Code에 요청 <span class="arr">→</span> 수정 후 📁 저장소에 저장</div></div>
+  </div>
+
+  <div class="disc">※ 본 도구의 산출물은 실무 참고용 초안이며 법적 효력이 없습니다. 최종본은 변호사·법무사 등 전문가 검토가 필요합니다.</div>
+
+</div>
+
+<script>
+var PKEY='jb_hub_project_url';
+function getProj(){return localStorage.getItem(PKEY)||''}
+function setProj(){
+  var cur=getProj();
+  var v=prompt('claude.ai 정비사업 프로젝트 주소(URL)를 붙여넣으세요.\n(프로젝트를 아직 안 만들었으면 비워두면 claude.ai로 이동합니다)',cur);
+  if(v===null)return;
+  localStorage.setItem(PKEY,v.trim());renderTip();
+  alert(v.trim()?'프로젝트 링크가 저장되었습니다.':'링크를 비웠습니다. claude.ai 기본 화면으로 연결됩니다.');
+}
+function goProj(e,q){
+  e.preventDefault();
+  var url=getProj()||'https://claude.ai/projects';
+  window.open(url,'_blank','noopener');
+}
+function renderTip(){
+  var t=document.getElementById('projTip');
+  if(getProj()){t.style.display='none';return}
+  t.style.display='block';
+  t.innerHTML='💡 <b>처음 설정:</b> claude.ai에서 "정비사업 실무 에이전트" 프로젝트를 만들고(지침에 <code>프로젝트_지침_v2.md</code> 붙여넣기), 우측 상단 <b>⚙ 프로젝트 링크 설정</b>에 그 주소를 저장하면 위 버튼이 바로 그 프로젝트로 연결됩니다.';
+}
+renderTip();
+</script>
+</body>
+</html>
