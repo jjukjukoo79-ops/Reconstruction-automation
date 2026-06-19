@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>조합설립 동의서 징구 시스템</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕','Malgun Gothic',sans-serif;background:#f5f5f7;color:#1a1a1a;font-size:14px}
+.header{background:#fff;border-bottom:1px solid #e5e5e5;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.header .ht{font-size:16px;font-weight:700}.header .hs{font-size:11px;color:#888;margin-top:2px}
+.tabbar{display:flex;gap:4px;padding:8px 16px;background:#fff;border-bottom:1px solid #e5e5e5;overflow-x:auto}
+.tb{padding:7px 13px;border-radius:8px;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid #ddd;white-space:nowrap;background:#f5f5f7;color:#555}
+.tb:hover{background:#eee}.tb.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.wrap{max-width:920px;margin:0 auto;padding:18px}
+.pane{display:none}.pane.on{display:block}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:18px;margin-bottom:16px}
+.card h2{font-size:15px;font-weight:700;margin-bottom:4px}
+.card .sub{font-size:11px;color:#888;margin-bottom:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.fld{flex:1;min-width:160px}
+.fld label{display:block;font-size:11px;color:#666;margin-bottom:4px;font-weight:600}
+.fld input,.fld select,.fld textarea{width:100%;font-size:13px;padding:9px 11px;border:1px solid #ddd;border-radius:8px;font-family:inherit;background:#fff}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:#60a5fa}
+.btn{font-size:13px;padding:9px 18px;border-radius:8px;cursor:pointer;border:1px solid #1a1a1a;background:#1a1a1a;color:#fff;font-family:inherit;font-weight:600}
+.btn:hover{opacity:.9}
+.btn.gh{background:#fff;color:#333;border-color:#ddd;font-weight:500}
+.btn.gh:hover{background:#f0f0f0}
+.btn.dg{background:#fff;color:#b91c1c;border-color:#fecaca}
+.btn.sm{font-size:11px;padding:5px 11px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#333;margin-bottom:8px;line-height:1.5}
+.chk input{margin-top:2px}
+.sigwrap{border:1px dashed #bbb;border-radius:8px;background:#fafafa;position:relative}
+.sigwrap canvas{display:block;width:100%;height:140px;border-radius:8px;touch-action:none;cursor:crosshair}
+.sigwrap .ph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#bbb;font-size:12px;pointer-events:none}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-c{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:13px;text-align:center}
+.stat-c .sn{font-size:22px;font-weight:700}.stat-c .sl{font-size:10.5px;color:#888;margin-top:3px}
+.req-card{border-left:4px solid #ddd;padding:14px 16px;border-radius:8px;background:#fff;border:1px solid #e5e5e5;margin-bottom:10px}
+.req-card.pass{border-left-color:#16a34a;background:#f0fdf4}
+.req-card.fail{border-left-color:#dc2626;background:#fef2f2}
+.req-card .rt{font-size:13px;font-weight:700;margin-bottom:8px}
+.bar{height:14px;background:#eee;border-radius:7px;overflow:hidden;margin:6px 0}
+.bar > i{display:block;height:100%;background:#60a5fa;border-radius:7px;transition:width .4s}
+.bar.ok > i{background:#16a34a}
+.barlbl{font-size:11.5px;color:#555;display:flex;justify-content:space-between}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:8px 9px;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
+th{background:#fafafa;color:#666;font-weight:600;font-size:11px}
+td .tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.t-ok{background:#dcfce7;color:#166534}.t-no{background:#f3f4f6;color:#6b7280}.t-rev{background:#fee2e2;color:#991b1b}.t-proxy{background:#dbeafe;color:#1e40af}
+.tablewrap{overflow-x:auto}
+.hint{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 13px;font-size:11.5px;color:#92400e;line-height:1.7;margin-bottom:14px}
+.note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 13px;font-size:11.5px;color:#1d4ed8;line-height:1.7;margin-bottom:14px}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.toolbar input[type=text]{flex:1;min-width:140px;font-size:12.5px;padding:8px 11px;border:1px solid #ddd;border-radius:8px}
+.ocrbox{border:2px dashed #bbb;border-radius:10px;padding:26px;text-align:center;color:#888;cursor:pointer;background:#fafafa}
+.ocrbox.drag{border-color:#60a5fa;background:#eff6ff;color:#1d4ed8}
+#ocrPrev{max-width:100%;max-height:240px;border-radius:8px;margin-top:12px;display:none}
+.prog{height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-top:10px;display:none}
+.prog>i{display:block;height:100%;width:0;background:#60a5fa}
+.disc{font-size:10.5px;color:#9a9a9a;line-height:1.7;margin-top:8px;border-top:1px dashed #e5e5e5;padding-top:10px}
+@media(max-width:640px){.stat-row{grid-template-columns:1fr 1fr}}
+/* 인쇄 */
+#printArea{display:none}
+@media print{
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:24px}
+}
+.doc{font-size:13px;line-height:2;color:#000}
+.doc h1{text-align:center;font-size:22px;letter-spacing:8px;margin:10px 0 26px}
+.doc .line{border-bottom:1px solid #000;display:inline-block;min-width:160px}
+.doc table{font-size:13px}.doc td,.doc th{border:1px solid #555;white-space:normal}
+.doc .sign{margin-top:36px;text-align:right;line-height:2.4}
+.doc .seal{display:inline-block;width:60px;text-align:center;color:#888;border:1px dashed #aaa;border-radius:50%;height:60px;line-height:60px;margin-left:6px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="ht">📋 조합설립 동의서 징구 시스템</div>
+    <div class="hs">전자동의서 · 전자위임장 · 서면양식 · 스캔 자동입력 · 동의율 자동판정 (도정법 제35조)</div>
+  </div>
+  <div style="font-size:11px;color:#888" id="hdProj">사업장 미설정</div>
+</div>
+
+<div class="tabbar">
+  <div class="tb on" data-p="dash">📊 현황</div>
+  <div class="tb" data-p="consent">📝 전자동의서</div>
+  <div class="tb" data-p="proxy">✍️ 전자위임장</div>
+  <div class="tb" data-p="print">🖨 서면양식</div>
+  <div class="tb" data-p="ocr">🔍 스캔 자동입력</div>
+  <div class="tb" data-p="list">👥 조합원 명부</div>
+  <div class="tb" data-p="settings">⚙️ 설정</div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== 현황 ===== -->
+<div class="pane on" id="p-dash">
+  <div class="stat-row">
+    <div class="stat-c"><div class="sn" id="s-total">0</div><div class="sl">전체 대상(명)</div></div>
+    <div class="stat-c"><div class="sn" style="color:#16a34a" id="s-agree">0</div><div class="sl">동의 완료</div></div>
+    <div class="stat-c"><div class="sn" style="color:#1e40af" id="s-proxy">0</div><div class="sl">위임장 제출</div></div>
+    <div class="stat-c"><div class="sn" style="color:#dc2626" id="s-rev">0</div><div class="sl">동의 철회</div></div>
+  </div>
+  <div class="card">
+    <h2>조합설립인가 동의 요건 판정</h2>
+    <div class="sub" id="dash-type">사업유형: -</div>
+    <div id="reqArea"></div>
+    <div class="disc">※ 도정법 제35조 기준 자동 판정입니다. 재건축의 <b>동별 구분소유자 과반수</b> 요건은 동별 데이터가 필요하므로 별도 확인하시기 바랍니다. 본 수치는 입력 데이터 기반 추정이며 인가 신청 전 반드시 전문가 검토가 필요합니다.</div>
+  </div>
+</div>
+
+<!-- ===== 전자동의서 ===== -->
+<div class="pane" id="p-consent">
+  <div class="card">
+    <h2>전자 조합설립 동의서</h2>
+    <div class="sub">도정법 제35조 · 작성 후 전자서명하여 제출하면 명부에 동의완료로 등록됩니다.</div>
+    <div class="row">
+      <div class="fld"><label>성명 *</label><input id="c-name" placeholder="홍길동"></div>
+      <div class="fld"><label>주민등록번호 *</label><input id="c-rrn" placeholder="900101-1234567"></div>
+      <div class="fld"><label>연락처</label><input id="c-phone" placeholder="010-1234-5678"></div>
+    </div>
+    <div class="row">
+      <div class="fld"><label>주소(주민등록)</label><input id="c-addr" placeholder="서울시 ○○구 ○○로 12"></div>
+    </div>
+    <div class="row">
+      <div class="fld" style="flex:2"><label>소유 부동산 소재지 *</label><input id="c-prop" placeholder="○○구 ○○동 123-4"></div>
+      <div class="fld"><label>토지/건물 면적(㎡) *</label><input id="c-area" type="number" placeholder="84.5"></div>
+    </div>
+    <div style="margin:10px 0 6px;font-size:12px;font-weight:700;color:#444">동의 항목</div>
+    <label class="chk"><input type="checkbox" id="ck1" checked><span>조합설립 및 정비사업 시행에 동의합니다. (도정법 제35조)</span></label>
+    <label class="chk"><input type="checkbox" id="ck2" checked><span>조합 정관(안) 및 조합 임원 선임에 동의합니다.</span></label>
+    <label class="chk"><input type="checkbox" id="ck3" checked><span>건축물 철거 및 신축, 비용 분담 기준에 동의합니다.</span></label>
+    <label class="chk" style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 10px"><input type="checkbox" id="ckp"><span><b>[필수] 개인정보 수집·이용 동의</b> — 동의서 징구·조합 업무 목적으로 성명·주민등록번호·주소·연락처를 수집·이용하는 데 동의합니다. (보관: 본 PC 브라우저에만 저장)</span></label>
+    <div style="margin:12px 0 4px;font-size:12px;font-weight:700;color:#444">전자서명</div>
+    <div class="sigwrap"><canvas id="sig-c"></canvas><span class="ph" id="ph-c">여기에 서명하세요</span></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gh sm" onclick="clearSig('c')">서명 지우기</button>
+      <div style="flex:1"></div>
+      <button class="btn" onclick="submitConsent()">동의서 제출 →</button>
+    </div>
+    <div class="disc">※ 본 전자동의서는 실무 참고용이며, 카카오·PASS·공동인증 등 공인 전자서명이 필요한 경우 별도 인증 절차를 거쳐야 법적 효력이 인정될 수 있습니다.</div>
+  </div>
+</div>
+
+<!-- ===== 전자위임장 ===== -->
+<div class="pane" id="p-proxy">
+  <div class="card">
+    <h2>전자 위임장</h2>
+    <div class="sub">총회 의결권 등 위임 사항을 작성하고 전자서명하여 제출합니다.</div>
+    <div class="row">
+      <div class="fld"><label>위임인(본인) 성명 *</label><input id="x-name" placeholder="홍길동"></div>
+      <div class="fld"><label>주민등록번호</label><input id="x-rrn" placeholder="900101-1234567"></div>
+      <div class="fld"><label>연락처</label><input id="x-phone" placeholder="010-..."></div>
+    </div>
+    <div class="row">
+      <div class="fld"><label>위임인 주소</label><input id="x-addr" placeholder="서울시 ○○구 ..."></div>
+    </div>
+    <div class="row">
+      <div class="fld"><label>수임인(대리인) 성명 *</label><input id="x-to" placeholder="김철수"></div>
+      <div class="fld"><label>본인과의 관계</label><input id="x-rel" placeholder="배우자 / 자녀 / 지인 등"></div>
+    </div>
+    <div class="row">
+      <div class="fld" style="flex:2"><label>위임 사항 *</label><input id="x-scope" value="조합 총회 출석 및 의결권 행사에 관한 일체의 권한"></div>
+      <div class="fld"><label>대상 총회/일자</label><input id="x-meeting" placeholder="창립총회 / 2026-07-15"></div>
+    </div>
+    <div style="margin:12px 0 4px;font-size:12px;font-weight:700;color:#444">위임인 전자서명</div>
+    <div class="sigwrap"><canvas id="sig-x"></canvas><span class="ph" id="ph-x">여기에 서명하세요</span></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gh sm" onclick="clearSig('x')">서명 지우기</button>
+      <div style="flex:1"></div>
+      <button class="btn" onclick="submitProxy()">위임장 제출 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 서면양식(인쇄) ===== -->
+<div class="pane" id="p-print">
+  <div class="card">
+    <h2>서면 양식 인쇄</h2>
+    <div class="sub">서면으로 받을 경우 빈 양식을 출력하거나, 명부에서 선택한 조합원 정보를 채워 출력합니다.</div>
+    <div class="row">
+      <div class="fld"><label>양식 종류</label><select id="pr-kind"><option value="consent">조합설립 동의서</option><option value="proxy">위임장</option></select></div>
+      <div class="fld"><label>채울 조합원(선택)</label><select id="pr-who"><option value="">빈 양식</option></select></div>
+      <div class="fld" style="display:flex;align-items:flex-end"><button class="btn" style="width:100%" onclick="doPrint()">🖨 인쇄 / PDF 저장</button></div>
+    </div>
+    <div class="note">인쇄 대화상자에서 <b>대상을 'PDF로 저장'</b>으로 선택하면 PDF 파일로도 보관할 수 있습니다.</div>
+  </div>
+</div>
+
+<!-- ===== 스캔 자동입력(OCR) ===== -->
+<div class="pane" id="p-ocr">
+  <div class="card">
+    <h2>스캔 자동입력 (OCR)</h2>
+    <div class="sub">서면 동의서/위임장을 촬영·스캔한 이미지를 올리면 성명·주민번호·주소·면적·연락처를 자동 인식합니다.</div>
+    <div class="hint">📷 <b>이미지(JPG·PNG)</b>를 올려주세요. 인쇄된 글자는 인식률이 높고, 손글씨는 낮을 수 있으니 <b>인식 결과를 반드시 확인·수정</b> 후 적용하세요. 첫 실행 시 한글 인식 데이터를 내려받느라 시간이 걸릴 수 있습니다(인터넷 필요).</div>
+    <div class="ocrbox" id="ocrBox">클릭하거나 이미지를 여기로 끌어다 놓으세요</div>
+    <input type="file" id="ocrFile" accept="image/*" style="display:none">
+    <div class="prog" id="ocrProg"><i></i></div>
+    <img id="ocrPrev">
+    <div id="ocrResult" style="display:none;margin-top:14px">
+      <div style="font-size:12px;font-weight:700;color:#444;margin-bottom:8px">인식 결과 확인·수정</div>
+      <div class="row">
+        <div class="fld"><label>성명</label><input id="o-name"></div>
+        <div class="fld"><label>주민등록번호</label><input id="o-rrn"></div>
+        <div class="fld"><label>연락처</label><input id="o-phone"></div>
+      </div>
+      <div class="row">
+        <div class="fld" style="flex:2"><label>주소 / 부동산 소재지</label><input id="o-addr"></div>
+        <div class="fld"><label>면적(㎡)</label><input id="o-area"></div>
+      </div>
+      <details style="margin:6px 0 10px"><summary style="font-size:11px;color:#888;cursor:pointer">인식된 원문 전체 보기</summary><pre id="o-raw" style="font-size:11px;background:#f7f7f7;padding:10px;border-radius:6px;white-space:pre-wrap;max-height:160px;overflow:auto"></pre></details>
+      <div class="row">
+        <button class="btn gh" onclick="ocrToConsent()">→ 전자동의서 폼 채우기</button>
+        <button class="btn" onclick="ocrToList()">명부에 바로 등록(미동의)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 명부 ===== -->
+<div class="pane" id="p-list">
+  <div class="card">
+    <h2>조합원 명부</h2>
+    <div class="sub">전자/서면/스캔으로 등록된 조합원 전체 목록입니다. 데이터는 이 PC 브라우저에만 저장됩니다.</div>
+    <div class="toolbar">
+      <input type="text" id="q" placeholder="이름·주소·부동산 검색" oninput="renderList()">
+      <select id="qf" onchange="renderList()" style="font-size:12px;padding:8px;border:1px solid #ddd;border-radius:8px">
+        <option value="">전체</option><option value="동의완료">동의완료</option><option value="미동의">미동의</option><option value="위임">위임장</option><option value="철회">철회</option>
+      </select>
+      <button class="btn gh sm" onclick="document.getElementById('csvFile').click()">📥 CSV 가져오기</button>
+      <button class="btn gh sm" onclick="exportCSV()">📤 CSV 내보내기</button>
+      <button class="btn gh sm" onclick="backup()">💾 백업(JSON)</button>
+      <button class="btn gh sm" onclick="document.getElementById('jsonFile').click()">♻️ 복원</button>
+      <input type="file" id="csvFile" accept=".csv" style="display:none">
+      <input type="file" id="jsonFile" accept=".json" style="display:none">
+    </div>
+    <div class="tablewrap">
+      <table><thead><tr><th>#</th><th>성명</th><th>주민번호</th><th>부동산 소재지</th><th>면적</th><th>연락처</th><th>상태</th><th>관리</th></tr></thead><tbody id="listBody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 설정 ===== -->
+<div class="pane" id="p-settings">
+  <div class="card">
+    <h2>사업장 설정</h2>
+    <div class="sub">동의율 요건 판정을 위해 사업유형과 전체 모집단을 입력하세요.</div>
+    <div class="row">
+      <div class="fld"><label>사업장명</label><input id="st-name" placeholder="○○구역 재개발정비사업조합"></div>
+      <div class="fld"><label>사업유형 *</label><select id="st-type"><option value="재개발">재개발</option><option value="재건축">재건축</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fld"><label>전체 토지등소유자 수(명) *</label><input id="st-owners" type="number" placeholder="850"></div>
+      <div class="fld"><label>전체 토지면적(㎡) *</label><input id="st-land" type="number" placeholder="52000"></div>
+    </div>
+    <button class="btn" onclick="saveSettings()">설정 저장</button>
+    <div class="disc">
+      <b>도정법 제35조 동의 요건</b><br>
+      · 재개발: 토지등소유자 <b>3/4 이상</b> + 토지면적 <b>1/2 이상</b> 동의<br>
+      · 재건축: 전체 구분소유자 <b>3/4 이상</b> + 토지면적 <b>3/4 이상</b> 동의 (＋ 각 동별 과반수)
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="color:#b91c1c">데이터 초기화</h2>
+    <div class="sub">모든 명부·설정을 삭제합니다. 되돌릴 수 없으니 먼저 백업하세요.</div>
+    <button class="btn dg" onclick="wipe()">전체 데이터 삭제</button>
+  </div>
+</div>
+
+</div>
+
+<!-- 인쇄 영역 -->
+<div id="printArea"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+var KEY='jb_jeongbi_consent_v1';
+var DB=load();
+function def(){return{settings:{name:'',type:'재개발',owners:0,land:0},records:[]}}
+function load(){try{return Object.assign(def(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return def()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(DB))}
+function $(id){return document.getElementById(id)}
+function comma(n){return (Math.round(n)||0).toLocaleString('ko-KR')}
+function maskRrn(r){if(!r)return '-';var m=(''+r).replace(/\s/g,'');var p=m.split('-');if(p.length===2)return p[0]+'-'+p[1].charAt(0)+'******';return m;}
+function uid(){return 'r'+(DB.records.reduce(function(a,b){return Math.max(a,b.seq||0)},0)+1)+'_'+(DB.records.length)}
+
+/* 탭 */
+document.querySelectorAll('.tb').forEach(function(t){t.onclick=function(){
+  document.querySelectorAll('.tb').forEach(function(x){x.classList.remove('on')});
+  document.querySelectorAll('.pane').forEach(function(x){x.classList.remove('on')});
+  t.classList.add('on');$('p-'+t.dataset.p).classList.add('on');
+  if(t.dataset.p==='dash')renderDash();
+  if(t.dataset.p==='list')renderList();
+  if(t.dataset.p==='print')fillWhoSelect();
+}});
+
+/* 서명패드 */
+var pads={};
+function initPad(key){
+  var cv=$('sig-'+key);var ratio=window.devicePixelRatio||1;
+  var w=cv.clientWidth||500;cv.width=w*ratio;cv.height=140*ratio;
+  var ctx=cv.getContext('2d');ctx.scale(ratio,ratio);ctx.lineWidth=2;ctx.lineCap='round';ctx.strokeStyle='#111';
+  var drawing=false,has=false;
+  function pos(e){var r=cv.getBoundingClientRect();var t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top}}
+  function start(e){drawing=true;var p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();}
+  function move(e){if(!drawing)return;var p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();has=true;$('ph-'+key).style.display='none';e.preventDefault();}
+  function end(){drawing=false;}
+  cv.addEventListener('mousedown',start);cv.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+  cv.addEventListener('touchstart',start);cv.addEventListener('touchmove',move);cv.addEventListener('touchend',end);
+  pads[key]={cv:cv,ctx:ctx,get has(){return has},clear:function(){ctx.clearRect(0,0,cv.width,cv.height);has=false;$('ph-'+key).style.display='block';}};
+}
+function clearSig(k){pads[k].clear()}
+
+/* 제출: 동의서 */
+function submitConsent(){
+  var name=$('c-name').value.trim(),rrn=$('c-rrn').value.trim(),prop=$('c-prop').value.trim(),area=parseFloat($('c-area').value);
+  if(!name){alert('성명을 입력하세요');return}
+  if(!$('ckp').checked){alert('개인정보 수집·이용 동의(필수)에 체크해야 제출할 수 있습니다.');return}
+  if(!prop){alert('소유 부동산 소재지를 입력하세요');return}
+  if(!pads.c.has){alert('전자서명을 해주세요');return}
+  if(rrn && dupRrn(rrn,null)){if(!confirm('같은 주민등록번호가 이미 등록되어 있습니다. 그래도 추가할까요?'))return}
+  var rec={id:uid(),seq:nextSeq(),kind:'동의서',status:'동의완료',name:name,rrn:rrn,phone:$('c-phone').value.trim(),
+    addr:$('c-addr').value.trim(),prop:prop,area:isNaN(area)?0:area,
+    consents:['설립'+($('ck1').checked?'O':'X'),'정관'+($('ck2').checked?'O':'X'),'비용'+($('ck3').checked?'O':'X')],
+    sig:pads.c.cv.toDataURL(),createdAt:new Date().toISOString()};
+  DB.records.push(rec);save();
+  alert('동의서가 제출·저장되었습니다. (동의완료)');
+  ['c-name','c-rrn','c-phone','c-addr','c-prop','c-area'].forEach(function(i){$(i).value=''});clearSig('c');
+  renderDash();
+}
+function dupRrn(rrn,exceptId){return DB.records.some(function(r){return r.rrn&&r.rrn===rrn&&r.id!==exceptId})}
+function nextSeq(){return DB.records.reduce(function(a,b){return Math.max(a,b.seq||0)},0)+1}
+
+/* 제출: 위임장 */
+function submitProxy(){
+  var name=$('x-name').value.trim(),to=$('x-to').value.trim();
+  if(!name){alert('위임인 성명을 입력하세요');return}
+  if(!to){alert('수임인 성명을 입력하세요');return}
+  if(!pads.x.has){alert('위임인 전자서명을 해주세요');return}
+  var rec={id:uid(),seq:nextSeq(),kind:'위임장',status:'위임',name:name,rrn:$('x-rrn').value.trim(),phone:$('x-phone').value.trim(),
+    addr:$('x-addr').value.trim(),prop:'',area:0,
+    proxy:{to:to,rel:$('x-rel').value.trim(),scope:$('x-scope').value.trim(),meeting:$('x-meeting').value.trim()},
+    sig:pads.x.cv.toDataURL(),createdAt:new Date().toISOString()};
+  DB.records.push(rec);save();
+  alert('위임장이 제출·저장되었습니다.');
+  ['x-name','x-rrn','x-phone','x-addr','x-to','x-rel','x-meeting'].forEach(function(i){$(i).value=''});clearSig('x');
+  renderDash();
+}
+
+/* 현황 */
+function renderDash(){
+  var rec=DB.records;
+  var agree=rec.filter(function(r){return r.status==='동의완료'});
+  $('s-total').textContent=DB.settings.owners||rec.length;
+  $('s-agree').textContent=agree.length;
+  $('s-proxy').textContent=rec.filter(function(r){return r.status==='위임'}).length;
+  $('s-rev').textContent=rec.filter(function(r){return r.status==='철회'}).length;
+  $('dash-type').textContent='사업유형: '+DB.settings.type+(DB.settings.name?' · '+DB.settings.name:'');
+  var owners=DB.settings.owners||0, land=DB.settings.land||0;
+  var aOwners=agree.length, aLand=agree.reduce(function(s,r){return s+(r.area||0)},0);
+  var ownerNeed=DB.settings.type==='재건축'?0.75:0.75;
+  var landNeed=DB.settings.type==='재건축'?0.75:0.5;
+  var html='';
+  html+=reqCard('① 토지등소유자 동의 ('+(ownerNeed*100)+'% 이상)',aOwners,owners,ownerNeed,'명');
+  html+=reqCard('② 토지면적 동의 ('+(landNeed*100)+'% 이상)',aLand,land,landNeed,'㎡');
+  if(DB.settings.type==='재건축')html+='<div class="disc" style="margin-top:4px">＋ 각 동별 구분소유자 과반수 동의 요건은 별도 확인 필요</div>';
+  if(!owners||!land)html='<div class="note">⚙️ 설정 탭에서 <b>전체 토지등소유자 수·전체 토지면적</b>을 입력하면 요건 충족 여부가 자동 판정됩니다.</div>'+html;
+  $('reqArea').innerHTML=html;
+}
+function reqCard(title,cur,total,need,unit){
+  var ratio=total>0?cur/total:0;var pass=ratio>=need;
+  var pct=total>0?(ratio*100).toFixed(1):'-';
+  return '<div class="req-card '+(total>0?(pass?'pass':'fail'):'')+'">'
+    +'<div class="rt">'+title+' '+(total>0?(pass?'✅ 충족':'❌ 미달'):'(모집단 미설정)')+'</div>'
+    +'<div class="bar '+(pass?'ok':'')+'"><i style="width:'+Math.min(100,ratio*100)+'%"></i></div>'
+    +'<div class="barlbl"><span>'+comma(cur)+' '+unit+' / '+comma(total)+' '+unit+'</span><span>'+pct+'%</span></div></div>';
+}
+
+/* 명부 */
+function renderList(){
+  var q=($('q').value||'').trim(),f=$('qf').value;
+  var rows=DB.records.filter(function(r){
+    if(f&&r.status!==f)return false;
+    if(q){var hay=(r.name+' '+(r.addr||'')+' '+(r.prop||'')).toLowerCase();if(hay.indexOf(q.toLowerCase())<0)return false}
+    return true;
+  });
+  $('listBody').innerHTML=rows.map(function(r){
+    var tag={'동의완료':'t-ok','미동의':'t-no','위임':'t-proxy','철회':'t-rev'}[r.status]||'t-no';
+    return '<tr><td>'+r.seq+'</td><td>'+r.name+'</td><td>'+maskRrn(r.rrn)+'</td><td>'+(r.prop||r.addr||'-')+'</td><td>'+(r.area?comma(r.area)+'㎡':'-')+'</td><td>'+(r.phone||'-')+'</td>'
+      +'<td><span class="tag '+tag+'">'+r.status+'</span></td>'
+      +'<td>'+(r.status==='동의완료'?'<button class="btn dg sm" onclick="revoke(\''+r.id+'\')">철회</button> ':'')
+      +(r.status==='철회'||r.status==='미동의'?'<button class="btn gh sm" onclick="reAgree(\''+r.id+'\')">동의</button> ':'')
+      +'<button class="btn gh sm" onclick="delRec(\''+r.id+'\')">삭제</button></td></tr>';
+  }).join('')||'<tr><td colspan="8" style="text-align:center;color:#aaa;padding:24px">등록된 조합원이 없습니다.</td></tr>';
+}
+function revoke(id){if(!confirm('이 조합원의 동의를 철회 처리할까요?'))return;var r=find(id);if(r){r.status='철회';save();renderList();renderDash()}}
+function reAgree(id){var r=find(id);if(r){r.status='동의완료';save();renderList();renderDash()}}
+function delRec(id){if(!confirm('삭제하면 복구할 수 없습니다. 삭제할까요?'))return;DB.records=DB.records.filter(function(r){return r.id!==id});save();renderList();renderDash()}
+function find(id){return DB.records.find(function(r){return r.id===id})}
+
+/* CSV */
+function exportCSV(){
+  var head=['일련번호','성명','주민등록번호','주소','부동산소재지','면적(㎡)','연락처','상태'];
+  var lines=[head.join(',')];
+  DB.records.forEach(function(r){lines.push([r.seq,r.name,r.rrn||'',q2(r.addr),q2(r.prop),r.area||'',r.phone||'',r.status].join(','))});
+  download('조합원명부.csv','﻿'+lines.join('\r\n'),'text/csv');
+}
+function q2(s){s=(s||'').replace(/"/g,'""');return /[",\n]/.test(s)?'"'+s+'"':s}
+$('csvFile').onchange=function(e){
+  var f=e.target.files[0];if(!f)return;var rd=new FileReader();
+  rd.onload=function(){
+    var txt=rd.result.replace(/^﻿/,'');var rows=txt.split(/\r?\n/).filter(function(l){return l.trim()});
+    var added=0;
+    rows.forEach(function(line,i){
+      var c=parseCsvLine(line);
+      if(i===0&&(c[0]==='성명'||c[1]==='성명'||/성명/.test(line)))return;
+      var name=(c[0]||'').trim();if(!name)return;
+      DB.records.push({id:uid(),seq:nextSeq(),kind:'명부',status:'미동의',name:name,rrn:(c[1]||'').trim(),addr:(c[2]||'').trim(),prop:(c[3]||'').trim(),area:parseFloat(c[4])||0,phone:(c[5]||'').trim(),createdAt:new Date().toISOString()});
+      added++;
+    });
+    save();renderList();renderDash();alert(added+'명을 명부에 추가했습니다.');
+  };rd.readAsText(f,'UTF-8');e.target.value='';
+};
+function parseCsvLine(line){var out=[],cur='',q=false;for(var i=0;i<line.length;i++){var ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}else{if(ch==='"')q=true;else if(ch===','){out.push(cur);cur=''}else cur+=ch}}out.push(cur);return out}
+
+/* 백업/복원 */
+function backup(){download('동의서징구_백업_'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(DB,null,2),'application/json')}
+$('jsonFile').onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var d=JSON.parse(rd.result);if(!d.records)throw 0;if(!confirm('현재 데이터를 복원본으로 교체합니다. 진행할까요?'))return;DB=Object.assign(def(),d);save();loadSettingsUI();renderList();renderDash();alert('복원되었습니다.')}catch(err){alert('올바른 백업 파일이 아닙니다.')}};rd.readAsText(f,'UTF-8');e.target.value=''};
+function download(fn,content,type){var b=new Blob([content],{type:type});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();URL.revokeObjectURL(a.href)}
+
+/* 설정 */
+function saveSettings(){DB.settings={name:$('st-name').value.trim(),type:$('st-type').value,owners:parseInt($('st-owners').value)||0,land:parseFloat($('st-land').value)||0};save();loadSettingsUI();renderDash();alert('설정이 저장되었습니다.')}
+function loadSettingsUI(){var s=DB.settings;$('st-name').value=s.name||'';$('st-type').value=s.type;$('st-owners').value=s.owners||'';$('st-land').value=s.land||'';$('hdProj').textContent=s.name?s.name+' ('+s.type+')':(s.type+' · 사업장명 미설정')}
+function wipe(){if(!confirm('모든 데이터를 삭제합니다. 되돌릴 수 없습니다.'))return;if(!confirm('정말 삭제할까요? 백업을 먼저 권장합니다.'))return;DB=def();save();loadSettingsUI();renderList();renderDash();alert('초기화되었습니다.')}
+
+/* OCR */
+var ocrImg=null;
+$('ocrBox').onclick=function(){$('ocrFile').click()};
+$('ocrBox').addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag')});
+$('ocrBox').addEventListener('dragleave',function(){this.classList.remove('drag')});
+$('ocrBox').addEventListener('drop',function(e){e.preventDefault();this.classList.remove('drag');if(e.dataTransfer.files[0])handleOcr(e.dataTransfer.files[0])});
+$('ocrFile').onchange=function(e){if(e.target.files[0])handleOcr(e.target.files[0])};
+function handleOcr(f){
+  if(!/image\//.test(f.type)){alert('이미지 파일(JPG·PNG)을 올려주세요. PDF는 화면 캡처 후 이미지로 올려주세요.');return}
+  var url=URL.createObjectURL(f);$('ocrPrev').src=url;$('ocrPrev').style.display='block';
+  if(typeof Tesseract==='undefined'){alert('OCR 엔진을 불러오지 못했습니다(인터넷 연결 확인). 수동 입력으로 진행하세요.');showOcrResult('');return}
+  $('ocrProg').style.display='block';var bar=$('ocrProg').firstElementChild;bar.style.width='5%';
+  Tesseract.recognize(url,'kor+eng',{logger:function(m){if(m.status==='recognizing text')bar.style.width=(10+m.progress*90)+'%'}})
+    .then(function(res){$('ocrProg').style.display='none';extractFields(res.data.text)})
+    .catch(function(){$('ocrProg').style.display='none';alert('인식에 실패했습니다. 수동으로 입력해 주세요.');showOcrResult('')});
+}
+function extractFields(text){
+  var rrn=(text.match(/(\d{6})\s*[-–~]\s*(\d{7})/)||[])[0]||'';
+  var phone=(text.match(/01[016789][-\s.]?\d{3,4}[-\s.]?\d{4}/)||[])[0]||'';
+  var area=(text.match(/(\d+(?:\.\d+)?)\s*(?:㎡|m2|제곱미터)/)||[])[1]||(text.match(/(\d+(?:\.\d+)?)\s*평/)||[])[1]||'';
+  var name=(text.match(/성\s*명[\s:：]*([가-힣]{2,5})/)||[])[1]||(text.match(/신청인[\s:：]*([가-힣]{2,5})/)||[])[1]||(text.match(/위임인[\s:：]*([가-힣]{2,5})/)||[])[1]||'';
+  var addr=(text.match(/주\s*소[\s:：]*([^\n]{4,60})/)||[])[1]||(text.match(/소재지[\s:：]*([^\n]{4,60})/)||[])[1]||'';
+  $('o-name').value=name.trim();$('o-rrn').value=rrn.replace(/\s/g,'');$('o-phone').value=phone.trim();
+  $('o-addr').value=addr.trim();$('o-area').value=area;
+  showOcrResult(text);
+}
+function showOcrResult(raw){$('o-raw').textContent=raw||'(원문 없음 — 수동 입력)';$('ocrResult').style.display='block'}
+function ocrToConsent(){
+  $('c-name').value=$('o-name').value;$('c-rrn').value=$('o-rrn').value;$('c-phone').value=$('o-phone').value;
+  $('c-addr').value=$('o-addr').value;$('c-prop').value=$('o-addr').value;$('c-area').value=$('o-area').value;
+  document.querySelector('.tb[data-p=consent]').click();alert('전자동의서 폼에 채웠습니다. 내용을 확인하고 서명 후 제출하세요.');
+}
+function ocrToList(){
+  var name=$('o-name').value.trim();if(!name){alert('성명이 비어 있습니다. 확인 후 등록하세요.');return}
+  DB.records.push({id:uid(),seq:nextSeq(),kind:'스캔',status:'미동의',name:name,rrn:$('o-rrn').value.trim(),phone:$('o-phone').value.trim(),addr:$('o-addr').value.trim(),prop:$('o-addr').value.trim(),area:parseFloat($('o-area').value)||0,createdAt:new Date().toISOString()});
+  save();alert('명부에 등록되었습니다(미동의).');document.querySelector('.tb[data-p=list]').click();
+}
+
+/* 인쇄 */
+function fillWhoSelect(){
+  var sel=$('pr-who');var cur=sel.value;
+  sel.innerHTML='<option value="">빈 양식</option>'+DB.records.map(function(r){return '<option value="'+r.id+'">'+r.seq+'. '+r.name+'</option>'}).join('');
+  sel.value=cur;
+}
+function doPrint(){
+  var kind=$('pr-kind').value;var r=find($('pr-who').value)||{};
+  var L=function(v){return '<span class="line">'+(v||'&nbsp;')+'</span>'};
+  var pname=DB.settings.name||'○○구역 정비사업조합';
+  var html;
+  if(kind==='consent'){
+    html='<div class="doc"><h1>조 합 설 립 동 의 서</h1>'
+      +'<p>본인은 「도시 및 주거환경정비법」 제35조에 따라 <b>'+pname+'</b>의 조합설립 및 정비사업 시행에 동의합니다.</p>'
+      +'<table style="width:100%;margin:18px 0"><tr><th style="width:25%">성명</th><td>'+L(r.name)+' (서명 또는 인) <span class="seal">인</span></td></tr>'
+      +'<tr><th>주민등록번호</th><td>'+L(r.rrn)+'</td></tr>'
+      +'<tr><th>주소</th><td>'+L(r.addr)+'</td></tr>'
+      +'<tr><th>소유 부동산 소재지</th><td>'+L(r.prop)+'</td></tr>'
+      +'<tr><th>면적(㎡)</th><td>'+L(r.area?r.area+'㎡':'')+'</td></tr>'
+      +'<tr><th>연락처</th><td>'+L(r.phone)+'</td></tr></table>'
+      +'<p>1. 조합설립 및 정비사업 시행에 동의함<br>2. 조합 정관(안) 및 임원 선임에 동의함<br>3. 건축물 철거·신축 및 비용분담 기준에 동의함</p>'
+      +'<div class="sign">20&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;.<br>동의자 '+L(r.name)+' (인)</div>'
+      +'<p style="text-align:center;margin-top:24px"><b>'+pname+' 귀중</b></p>'
+      +'<p style="font-size:10px;color:#888;margin-top:18px">※ 본 양식은 실무 참고용 초안이며, 최종본은 변호사·법무사 등 전문가 검토가 필요합니다.</p></div>';
+  }else{
+    var px=r.proxy||{};
+    html='<div class="doc"><h1>위 &nbsp; 임 &nbsp; 장</h1>'
+      +'<table style="width:100%;margin:18px 0"><tr><th style="width:25%">위임인(본인)</th><td>'+L(r.name)+' (인) <span class="seal">인</span></td></tr>'
+      +'<tr><th>주민등록번호</th><td>'+L(r.rrn)+'</td></tr>'
+      +'<tr><th>주소</th><td>'+L(r.addr)+'</td></tr>'
+      +'<tr><th>수임인(대리인)</th><td>'+L(px.to)+'</td></tr>'
+      +'<tr><th>본인과의 관계</th><td>'+L(px.rel)+'</td></tr>'
+      +'<tr><th>위임 사항</th><td>'+L(px.scope||'조합 총회 출석 및 의결권 행사에 관한 일체의 권한')+'</td></tr>'
+      +'<tr><th>대상 총회/일자</th><td>'+L(px.meeting)+'</td></tr></table>'
+      +'<p>위 사람을 대리인으로 정하고 위 사항에 관한 권한을 위임합니다.</p>'
+      +'<div class="sign">20&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;.<br>위임인 '+L(r.name)+' (인)</div>'
+      +'<p style="text-align:center;margin-top:24px"><b>'+pname+' 귀중</b></p>'
+      +'<p style="font-size:10px;color:#888;margin-top:18px">※ 본 양식은 실무 참고용 초안이며, 최종본은 전문가 검토가 필요합니다.</p></div>';
+  }
+  $('printArea').innerHTML=html;window.print();
+}
+
+/* init */
+initPad('c');initPad('x');loadSettingsUI();renderDash();
+window.addEventListener('resize',function(){/* 서명 캔버스는 새로고침 시 재설정 */});
+</script>
+</body>
+</html>
